@@ -28,20 +28,28 @@ function onDeviceReady() {
 }
 
 function loadData() {
-	// These two lines for resetting the DB
-//	var db = window.openDatabase("Database", "1.0", "PhoneGap Demo", 200000);
-//    db.transaction(populateDB, errorCB, loadButtonData);
+
+	var db = window.openDatabase("Database", "1.0", "PhoneGap Demo", 200000);
+
+	// For resetting the DB
+//	db.transaction(populateDB, errorCB, loadButtonData);
+	
 	// This line restores buttons from saved
-	loadButtonData();
+    db.transaction(createEmptyTablesIfNotPresent, errorCB, loadButtonData);
+//	loadButtonData();
 }
 
 // Populate the database 
 //
+
+function createEmptyTablesIfNotPresent(tx) {
+    tx.executeSql('CREATE TABLE IF NOT EXISTS BUTTONS (id unique, label, code, xpos, ypos)');
+}
+
 function populateDB(tx) {
-    tx.executeSql('DROP TABLE IF EXISTS DEMO');
     tx.executeSql('DROP TABLE IF EXISTS BUTTONS');
     tx.executeSql('CREATE TABLE IF NOT EXISTS BUTTONS (id unique, label, code, xpos, ypos)');
-    tx.executeSql('INSERT INTO BUTTONS (id, label, code, xpos, ypos) VALUES (1, "Sample Button", 0, 0, 0)');
+    tx.executeSql('INSERT INTO BUTTONS (id, label, code, xpos, ypos) VALUES (1, "Database Refreshed", 0, 0, 0)');
 }
 
 //Populate the database 

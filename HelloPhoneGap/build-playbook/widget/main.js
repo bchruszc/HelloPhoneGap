@@ -1,3 +1,102 @@
+function init() {
+    // the next line makes it impossible to see Contacts on the HTC Evo since it
+    // doesn't have a scroll button
+    // document.addEventListener("touchmove", preventBehavior, false);
+	
+//	alert("Platform: " + device.platform);
+    document.addEventListener("deviceready", onDeviceReady, true);
+    loadData(); // For web browsers. Devices will not be ready, and will do nothing.
+    
+	/* Load from the store, and create buttons */
+	//$('#button_list').append('<li><a href="#">Test</a></li>');
+	//$('#button_list').listview('refresh');  // Must be called after editing the list
+	
+	//var db = window.openDatabase("test", "1.0", "Test DB", 1000000);  // Name, version, display name, size
+	//db.transaction(populateDB, errorBC, successCB);
+}
+
+//
+// PhoneGap is ready
+//
+
+function onDeviceReady() {
+}
+
+function loadData() {
+	// These two lines for resetting the DB
+//	var db = window.openDatabase("Database", "1.0", "PhoneGap Demo", 200000);
+//    db.transaction(populateDB, errorCB, loadButtonData);
+	// This line restores buttons from saved
+	loadButtonData();
+}
+
+// Populate the database 
+//
+function populateDB(tx) {
+    tx.executeSql('DROP TABLE IF EXISTS DEMO');
+    tx.executeSql('DROP TABLE IF EXISTS BUTTONS');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS BUTTONS (id unique, label, code, xpos, ypos)');
+    tx.executeSql('INSERT INTO BUTTONS (id, label, code, xpos, ypos) VALUES (1, "Sample Button", 0, 0, 0)');
+}
+
+//Populate the database 
+//
+function loadCodes(tx) {
+    tx.executeSql('SELECT * FROM BUTTONS', [], loadCodesSuccess, errorCB);
+}
+
+// Query the success callback
+//
+function loadCodesSuccess(tx, results) {
+    // this will be empty since no rows were inserted.
+    //console.log("Insert ID = " + results.insertId);
+    // this will be 0 since it is a select statement
+    console.log("Rows Affected = " + results.rowAffected);
+    // the number of rows returned by the select statement
+    console.log("Insert ID = " + results.rows.length);
+    
+    var buttons = [];  // [cols][rows]
+    
+    for(var rows = 0; rows < 10; rows++){
+    	buttons[rows] = [];
+    }
+    
+    // Scrap whatever is in the UI, and reload from database
+    for(var i = 0; i < results.rows.length; i++){
+    	butt = results.rows.item(i);
+    	buttons[butt.xpos][butt.ypos] = butt.label;
+    }
+    
+    for(var row = 0; row < 10; row++){
+    	for(var col = 0; col < 2; col++){
+    		if(buttons[col][row]){
+    			$('#button_grid').append('<div class="ui-block-a"><button type="submit" data-theme="c">' + buttons[col][row] + '</button></div>');
+    		} else {
+    			$('#button_grid').append('<div class="ui-block-a"></div>');
+    		}
+    	}
+    }
+    
+    // refresh all buttons
+    buts = $('button').button();
+}
+
+
+// Transaction error callback
+//
+function errorCB(tx, err) {
+    alert("Error processing SQL: " + tx.message);
+}
+
+// Transaction success callback
+//
+function loadButtonData() {
+    var db = window.openDatabase("Database", "1.0", "PhoneGap Demo", 200000);
+    db.transaction(loadCodes, errorCB);
+}
+
+/*  Old stuff, for reference
+
 var deviceInfo = function() {
     document.getElementById("platform").innerHTML = device.platform;
     document.getElementById("version").innerHTML = device.version;
@@ -118,10 +217,5 @@ function check_network() {
 
     confirm('Connection type:\n ' + states[networkState]);
 }
+*/
 
-function init() {
-    // the next line makes it impossible to see Contacts on the HTC Evo since it
-    // doesn't have a scroll button
-    // document.addEventListener("touchmove", preventBehavior, false);
-    document.addEventListener("deviceready", deviceInfo, true);
-}

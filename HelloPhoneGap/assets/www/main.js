@@ -4,7 +4,12 @@ function init() {
     // document.addEventListener("touchmove", preventBehavior, false);
 	
 //	alert("Platform: " + device.platform);
-    document.addEventListener("deviceready", onDeviceReady, true);
+	
+	window.addEventListener('load', function () {
+	    document.addEventListener('deviceready', onDeviceReady(), false);
+	}, false);
+//    document.addEventListener("deviceready", onDeviceReady, true);
+	
     loadData(); // For web browsers. Devices will not be ready, and will do nothing.
     
 	/* Load from the store, and create buttons */

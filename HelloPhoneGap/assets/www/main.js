@@ -43,13 +43,13 @@ function loadData() {
 //
 
 function createEmptyTablesIfNotPresent(tx) {
-    tx.executeSql('CREATE TABLE IF NOT EXISTS BUTTONS (id unique, label, code, xpos, ypos)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS BUTTONS (id unique, label, code, row, col)');
 }
 
 function populateDB(tx) {
     tx.executeSql('DROP TABLE IF EXISTS BUTTONS');
-    tx.executeSql('CREATE TABLE IF NOT EXISTS BUTTONS (id unique, label, code, xpos, ypos)');
-    tx.executeSql('INSERT INTO BUTTONS (id, label, code, xpos, ypos) VALUES (1, "Database Refreshed", 0, 0, 0)');
+    tx.executeSql('CREATE TABLE IF NOT EXISTS BUTTONS (id unique, label, code, code_type, row, col)');
+    tx.executeSql('INSERT INTO BUTTONS (id, label, code, code_type, row, col) VALUES (1, "Database Refreshed", "", 0, 0, 0)');
 }
 
 //Populate the database 
@@ -58,8 +58,6 @@ function loadCodes(tx) {
     tx.executeSql('SELECT * FROM BUTTONS', [], loadCodesSuccess, errorCB);
 }
 
-// Query the success callback
-//
 function loadCodesSuccess(tx, results) {
     // this will be empty since no rows were inserted.
     //console.log("Insert ID = " + results.insertId);
@@ -77,21 +75,68 @@ function loadCodesSuccess(tx, results) {
     // Scrap whatever is in the UI, and reload from database
     for(var i = 0; i < results.rows.length; i++){
     	butt = results.rows.item(i);
-    	buttons[butt.xpos][butt.ypos] = butt.label;
+    	buttons[butt.col][butt.row] = butt;
     }
     
-    for(var row = 0; row < 10; row++){
+    $('#button_grid').empty();
+    $('#layout_button_grid').empty();
+    
+    for(var row = 0; row < 5; row++){
     	for(var col = 0; col < 2; col++){
-    		if(buttons[col][row]){
-    			$('#button_grid').append('<div class="ui-block-a"><button type="submit" data-theme="c">' + buttons[col][row] + '</button></div>');
+    		if(col == 0){
+    			block = 'a';
+    		} else if (col == 1){
+    			block = 'b';
+    		} else if (col == 1){
+    			block = 'c';
+    		} else if (col == 1){
+    			block = 'd';
     		} else {
-    			$('#button_grid').append('<div class="ui-block-a"></div>');
+    			block = 'a';
+    		}
+    		if(buttons[col][row]){
+    			$('#button_grid').append('<div class="ui-block-'+ block +'"><button type="submit" data-theme="c" onclick="sendCode('+buttons[col][row].code_type+',\''+buttons[col][row].code+'\')">' + buttons[col][row].label + '</button></div>');
+    			$('#layout_button_grid').append('<div class="ui-block-'+ block +'"><button type="submit" data-theme="b" onclick="editButton('+buttons[col][row].row+','+buttons[col][row].col+','+buttons[col][row].code+',\''+buttons[col][row].label+'\')">' + buttons[col][row].label + '</button></div>');
+    		} else {
+    			$('#button_grid').append('<div class="ui-block-'+ block +'"></div>');
+    			$('#layout_button_grid').append('<div class="ui-block-'+ block +'"><button type="submit" data-theme="a" href="#options_add_button_popup" data-role="button" data-rel="dialog" data-transition="pop" onclick="setNextButtonLoc(' + row + ', ' + col + ');">+</button></div>');
     		}
     	}
     }
     
     // refresh all buttons
     buts = $('button').button();
+}
+
+function sendCode(row, col){
+//	alert("sendCode: " + row + ", " + col)
+    $.ajax({
+        type: "GET",
+        url: "http://192.168.0.50/send?c=0x4B36D32C&p=1",
+        cache: false,
+        dataType: "text",
+        success: sendCodeSuccess,
+        error: sendCodeError
+      });
+}
+
+function sendCodeSuccess(msg){
+	alert("Code send success: " + msg);
+}
+
+function sendCodeError(msg){
+	alert("Code send error: " + msg.statusText);
+}
+
+function editButton(row, col, code, label){
+	alert("Edit Button: " + row + ", " + col + ", " + code + ", " + label)
+}
+
+function setNextButtonLoc(row, col){
+	$("#button_col").val(col);
+	$("#button_row").val(row);
+	
+	$.mobile.changePage("#options_add_button_popup", "pop", true, false);
 }
 
 
@@ -108,127 +153,41 @@ function loadButtonData() {
     db.transaction(loadCodes, errorCB);
 }
 
-/*  Old stuff, for reference
-
-var deviceInfo = function() {
-    document.getElementById("platform").innerHTML = device.platform;
-    document.getElementById("version").innerHTML = device.version;
-    document.getElementById("uuid").innerHTML = device.uuid;
-    document.getElementById("name").innerHTML = device.name;
-    document.getElementById("width").innerHTML = screen.width;
-    document.getElementById("height").innerHTML = screen.height;
-    document.getElementById("colorDepth").innerHTML = screen.colorDepth;
-};
-
-var getLocation = function() {
-    var suc = function(p) {
-        alert(p.coords.latitude + " " + p.coords.longitude);
-    };
-    var locFail = function() {
-    };
-    navigator.geolocation.getCurrentPosition(suc, locFail);
-};
-
-var beep = function() {
-    navigator.notification.beep(2);
-};
-
-var vibrate = function() {
-    navigator.notification.vibrate(0);
-};
-
-function roundNumber(num) {
-    var dec = 3;
-    var result = Math.round(num * Math.pow(10, dec)) / Math.pow(10, dec);
-    return result;
+function addButtonData(){
+	var name = $("#button_name").val();
+	var code = $("#button_remote_code").val();
+	
+	if(name == null || name == ""){
+		alert("Please enter a button name");
+		return;
+	}
+	
+	if(code == null || code == ""){
+		alert("Please enter a button code");
+		return;
+	}
+	
+    var db = window.openDatabase("Database", "1.0", "PhoneGap Demo", 200000);
+    db.transaction(addCode, errorCB);
+    db.transaction(loadCodes, errorCB, toLayout);
 }
 
-var accelerationWatch = null;
-
-function updateAcceleration(a) {
-    document.getElementById('x').innerHTML = roundNumber(a.x);
-    document.getElementById('y').innerHTML = roundNumber(a.y);
-    document.getElementById('z').innerHTML = roundNumber(a.z);
+function toLayout(){
+	$.mobile.changePage("#layout", "flip", true, false);
 }
 
-var toggleAccel = function() {
-    if (accelerationWatch !== null) {
-        navigator.accelerometer.clearWatch(accelerationWatch);
-        updateAcceleration({
-            x : "",
-            y : "",
-            z : ""
-        });
-        accelerationWatch = null;
-    } else {
-        var options = {};
-        options.frequency = 1000;
-        accelerationWatch = navigator.accelerometer.watchAcceleration(
-                updateAcceleration, function(ex) {
-                    alert("accel fail (" + ex.name + ": " + ex.message + ")");
-                }, options);
-    }
-};
-
-var preventBehavior = function(e) {
-    e.preventDefault();
-};
-
-function dump_pic(data) {
-    var viewport = document.getElementById('viewport');
-    console.log(data);
-    viewport.style.display = "";
-    viewport.style.position = "absolute";
-    viewport.style.top = "10px";
-    viewport.style.left = "10px";
-    document.getElementById("test_img").src = "data:image/jpeg;base64," + data;
+function addCode(tx){
+	var col = $("#button_col").val();
+	var row = $("#button_row").val();
+	
+	var name = $("#button_name").val();
+	var code = $("#button_remote_code").val();
+	
+//    tx.executeSql('INSERT INTO BUTTONS (label, code, code_type, row, col) VALUES ("fdsa", 4444, 0, 3, 1)');
+    tx.executeSql('INSERT INTO BUTTONS (label, code, code_type, row, col) VALUES ("' + name + '", "' + code + '", 0, ' + row +', ' + col + ' )');
 }
 
-function fail(msg) {
-    alert(msg);
+function purgeAllData(){
+	var db = window.openDatabase("Database", "1.0", "PhoneGap Demo", 200000);
+	db.transaction(populateDB, errorCB, loadButtonData);
 }
-
-function show_pic() {
-    navigator.camera.getPicture(dump_pic, fail, {
-        quality : 50
-    });
-}
-
-function close() {
-    var viewport = document.getElementById('viewport');
-    viewport.style.position = "relative";
-    viewport.style.display = "none";
-}
-
-function contacts_success(contacts) {
-    alert(contacts.length
-            + ' contacts returned.'
-            + (contacts[2] && contacts[2].name ? (' Third contact is ' + contacts[2].name.formatted)
-                    : ''));
-}
-
-function get_contacts() {
-    var obj = new ContactFindOptions();
-    obj.filter = "";
-    obj.multiple = true;
-    navigator.contacts.find(
-            [ "displayName", "name" ], contacts_success,
-            fail, obj);
-}
-
-function check_network() {
-    var networkState = navigator.network.connection.type;
-
-    var states = {};
-    states[Connection.UNKNOWN]  = 'Unknown connection';
-    states[Connection.ETHERNET] = 'Ethernet connection';
-    states[Connection.WIFI]     = 'WiFi connection';
-    states[Connection.CELL_2G]  = 'Cell 2G connection';
-    states[Connection.CELL_3G]  = 'Cell 3G connection';
-    states[Connection.CELL_4G]  = 'Cell 4G connection';
-    states[Connection.NONE]     = 'No network connection';
-
-    confirm('Connection type:\n ' + states[networkState]);
-}
-*/
-

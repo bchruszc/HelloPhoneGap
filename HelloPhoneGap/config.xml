@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0"
+	id="com.bchruszc.hellophonegap" version="1.0.0">
+
+	<name>RemoteDuino Mobile App</name>
+
+	<description>
+		RemoteDuino Mobile App
+	</description>
+
+	<author email="bradley.chruszcz@gmail.com">
+		Bradley Chruszcz
+	</author>
+
+	<!-- <icon src="icon.png" gap:role="default" /> -->
+
+	<feature name="http://api.phonegap.com/1.0/network" />
+
+	<!-- sample preference specification -->
+	<!-- <preference name="autorotate" value="false" readonly="true"/> -->
+</widget>

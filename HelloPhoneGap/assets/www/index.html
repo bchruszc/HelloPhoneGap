@@ -3,53 +3,115 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>PhoneGap</title>
-	  <!-- <link rel="stylesheet" href="master.css" type="text/css" media="screen" title="no title" charset="utf-8"> -->
-	  <link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.0.css" />
-	  <link type="text/css" rel="stylesheet" href="css/remoteduino.css" />
-	  <script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
-	  <script type="text/javascript" charset="utf-8" src="main.js"></script>
-		<script type="text/javascript" src="js/jquery-1.7.1.js"></script>
-		<script type="text/javascript" src="js/jquery.mobile-1.0.js"></script>
+    <title>
+      PhoneGap
+    </title>
+    <!-- <link rel="stylesheet" href="master.css" type="text/css" media="screen" title="no title" charset="utf-8"> -->
+    <link type="text/css" rel="stylesheet" href="css/jquery.mobile-1.0.css" />
+    <link type="text/css" rel="stylesheet" href="css/remoteduino.css" />
+    <script type="text/javascript" charset="utf-8" src="phonegap.js">
+    </script>
+    <script type="text/javascript" charset="utf-8" src="main.js">
+    </script>
+    <script type="text/javascript" src="js/jquery-1.7.1.js">
+    </script>
+    <script type="text/javascript" src="js/jquery.mobile-1.0.js">
+    </script>
 
   </head>
   <body onload="init();" id="stage" class="theme">
-  
-  	<div data-role="page" id="home">
-  		<div data-role="header">
-			<a href="#options" data-role="button">Options</a>
-			<h1>RemoteDuino</h1>
-			<a href="#layout" data-role="button">Layout</a>
-  		</div>
-		<div data-role="content">
+    <!-- HOME PAGE -->
+    <div data-role="page" id="home">
+      <div data-role="header">
+        <a href="#options" data-role="button">
+          Options
+        </a>
+        <h1>
+          RemoteDuino
+        </h1>
+        <a href="#layout" data-role="button">
+          Layout
+        </a>
+      </div>
+      <div data-role="content">
+        <div id="button_grid" class="ui-grid-a">
+          <!-- a = 2 cols, b = 3 , c = 4, d = 5 -->
+          <!-- Dynamically Loaded Content -->
+        </div>
+        <!-- /grid-a -->
+      </div>
+      <!-- /content -->
+    </div>
+    
+    <!-- OPTIONS PAGE -->
+    <div data-role="page" id="options">
+      <div data-role="header">
+        <a href="#home" data-role="button">
+          Back
+        </a>
+        <h1>
+          Options
+        </h1>
+      </div>
+      <div data-role="content">
+          <a onclick="purgeAllData()" data-role="button">Purge All Data</a>
+      </div>
+      <!-- /content -->
+    </div>
 
-			<div id="button_grid" class="ui-grid-a">  <!-- a = 2 cols, b = 3 , c = 4, d = 5 -->
-				<!-- Dynamically Loaded Content -->
-			</div><!-- /grid-a -->
-		</div><!-- /content -->
-  	</div>
-  	
-  	  <div data-role="page" id="options">
-  		<div data-role="header">
-			<a href="#home" data-role="button">Back</a>
-			<h1>Options</h1>
-  		</div>
-		<div data-role="content">
-			<div id="button_grid" class="ui-grid-a">  <!-- a = 2 cols, b = 3 , c = 4, d = 5 -->
-				<!-- Dynamically Loaded Content -->
-			</div><!-- /grid-a -->
-		</div><!-- /content -->
-  	</div>
-  	<div data-role="page" id="layout">
-  		<div data-role="header">
-			<a href="#home" data-role="button">Back</a>
-			<h1>Layout</h1>
-  		</div>
-		<div data-role="content">
-			<div id="button_grid" class="ui-grid-a">  <!-- a = 2 cols, b = 3 , c = 4, d = 5 -->
-				<!-- Dynamically Loaded Content -->
-			</div><!-- /grid-a -->
-		</div><!-- /content -->
-  	</div>
+    <!-- LAYOUT PAGE -->
+    <div data-role="page" id="layout">
+      <div data-role="header">
+        <a href="#home" data-role="button">
+          Back
+        </a>
+        <h1>
+          Layout
+        </h1>
+        <a 
+            id="options_add_button"
+            href="#options_add_button_popup"
+            data-role="button"
+             data-rel="dialog"
+            data-transition="pop">
+
+          Add
+        </a>
+      </div>
+      <div data-role="content">
+        <div id="layout_button_grid" class="ui-grid-a">
+          <!-- a = 2 cols, b = 3 , c = 4, d = 5 -->
+          <!-- Dynamically Loaded Content -->
+        </div>
+        <!-- /grid-a -->
+      </div>
+      <!-- /content -->
+    </div>
+
+    <!-- ADD BUTTON POPUP -->
+    <div data-role="page" id="options_add_button_popup">
+      <div data-role="header">
+        <h1>
+          Add New Button
+        </h1>
+      </div>
+      <div data-role="content">
+        <form>
+          <input type="hidden" value="1" id="button_row" />
+          <input type="hidden" value="1" id="button_col" />
+          Button Name:
+          <input type="text" id="button_name" />
+          <br />
+          <a data-role="button">
+            Learn...
+          </a>
+          Remote Code:
+          <input type="text" id="button_remote_code" />
+          <br />
+          <a onclick="addButtonData()" data-role="button" name="add_button_button">Add</a>
+        </form>
+      </div>
+      <!-- /content -->
+    </div>
   </body>
 </html>

@@ -17,6 +17,14 @@
     </script>
     <script type="text/javascript" src="js/jquery.mobile-1.0.js">
     </script>
+    <script type="text/javascript">
+    	$( document ).bind( "mobileinit", function() {
+    	// Make your jQuery Mobile framework configuration changes here!
+	
+    	$.mobile.allowCrossDomainPages = true;
+    	$.support.cors = true;
+	});
+    </script>
 
   </head>
   <body onload="init();" id="stage" class="theme">
@@ -99,10 +107,11 @@
         <form>
           <input type="hidden" value="1" id="button_row" />
           <input type="hidden" value="1" id="button_col" />
+          <input type="hidden" value="1" id="button_type" />
           Button Name:
           <input type="text" id="button_name" />
           <br />
-          <a data-role="button">
+          <a data-role="button" id="layout_learn_button" onclick="learnCode();">
             Learn...
           </a>
           Remote Code:

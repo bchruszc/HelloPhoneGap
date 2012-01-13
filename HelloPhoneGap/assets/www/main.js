@@ -96,7 +96,7 @@ function loadCodesSuccess(tx, results) {
     		}
     		if(buttons[col][row]){
     			$('#button_grid').append('<div class="ui-block-'+ block +'"><button type="submit" data-theme="c" onclick="sendCode('+buttons[col][row].code_type+',\''+buttons[col][row].code+'\')">' + buttons[col][row].label + '</button></div>');
-    			$('#layout_button_grid').append('<div class="ui-block-'+ block +'"><button type="submit" data-theme="b" onclick="editButton('+buttons[col][row].row+','+buttons[col][row].col+','+buttons[col][row].code+',\''+buttons[col][row].label+'\')">' + buttons[col][row].label + '</button></div>');
+    			$('#layout_button_grid').append('<div class="ui-block-'+ block +'"><button type="submit" data-theme="b" onclick="editButton('+buttons[col][row].row+','+buttons[col][row].col+',\''+buttons[col][row].code+'\',\''+buttons[col][row].label+'\')">' + buttons[col][row].label + '</button></div>');
     		} else {
     			$('#button_grid').append('<div class="ui-block-'+ block +'"></div>');
     			$('#layout_button_grid').append('<div class="ui-block-'+ block +'"><button type="submit" data-theme="a" href="#options_add_button_popup" data-role="button" data-rel="dialog" data-transition="pop" onclick="setNextButtonLoc(' + row + ', ' + col + ');">+</button></div>');
@@ -108,24 +108,51 @@ function loadCodesSuccess(tx, results) {
     buts = $('button').button();
 }
 
-function sendCode(row, col){
+function sendCode(type, code){
 //	alert("sendCode: " + row + ", " + col)
-    $.ajax({
-        type: "GET",
-        url: "http://192.168.0.50/send?c=0x4B36D32C&p=1",
-        cache: false,
-        dataType: "text",
-        success: sendCodeSuccess,
-        error: sendCodeError
+//    $.get({
+//        type: "GET",
+//        url: "http://192.168.0.50/send?c=0x4B36D32C&p=1",
+//        timeout:6000,
+//        cache: false,
+//        dataType: "html",
+//        success: sendCodeSuccess,
+//        error: sendCodeError
+//      });
+    
+    var jqxhr = $.get("http://192.168.0.50/send?c=0x"+code+"&p=" + type, function(msg) {
+        alert("Success: " + "http://192.168.0.50/send?c=0x"+code+"&p=" + type);
+      })
+      .error(function() { alert("Error sending code!"); });
+}
+
+function learnCode(){
+	$("#layout_learn_button").text("Waiting...");
+//	$("#layout_learn_button").button();
+	
+	$( "#layout_learn_button" ).bind( "click", function(event, ui) {
+		  // Do nothing, for now
+		});
+	
+    var jqxhr = $.get("http://192.168.0.50/learn", function(msg) {
+//        alert("Learned: " + msg);
+        $("#button_remote_code").val(msg);
+        $("#button_type").val(msg);
+        
+//    	$( "#layout_learn_button" ).bind( "click", function(event, ui) {
+//  		  	alert("Too late!");
+//  		});
+      })
+      .error(function() { alert("Error learning code!"); })
+      .complete(function() { 
+      	$("#layout_learn_button").text("LEARN...");
+//    	$("#layout_learn_button").button();
       });
-}
+    
+    
+//	$("#layout_learn_button").text("LEARN...");
+//	$("#layout_learn_button").button();
 
-function sendCodeSuccess(msg){
-	alert("Code send success: " + msg);
-}
-
-function sendCodeError(msg){
-	alert("Code send error: " + msg.statusText);
 }
 
 function editButton(row, col, code, label){
@@ -184,7 +211,7 @@ function addCode(tx){
 	var code = $("#button_remote_code").val();
 	
 //    tx.executeSql('INSERT INTO BUTTONS (label, code, code_type, row, col) VALUES ("fdsa", 4444, 0, 3, 1)');
-    tx.executeSql('INSERT INTO BUTTONS (label, code, code_type, row, col) VALUES ("' + name + '", "' + code + '", 0, ' + row +', ' + col + ' )');
+    tx.executeSql('INSERT INTO BUTTONS (label, code, code_type, row, col) VALUES ("' + name + '", "' + code + '", 1, ' + row +', ' + col + ' )');
 }
 
 function purgeAllData(){

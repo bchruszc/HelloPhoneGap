@@ -18,109 +18,158 @@
     <script type="text/javascript" src="js/jquery.mobile-1.0.js">
     </script>
     <script type="text/javascript">
-    	$( document ).bind( "mobileinit", function() {
-    	// Make your jQuery Mobile framework configuration changes here!
-	
-    	$.mobile.allowCrossDomainPages = true;
-    	$.support.cors = true;
-	});
-    </script>
+      $( document ).bind( "mobileinit", function() {
+        // Make your jQuery Mobile framework configuration changes here!
 
-  </head>
-  <body onload="init();" id="stage" class="theme">
-    <!-- HOME PAGE -->
-    <div data-role="page" id="home">
-      <div data-role="header">
-        <a href="#options" data-role="button">
-          Options
-        </a>
-        <h1>
-          RemoteDuino
-        </h1>
-        <a href="#layout" data-role="button">
-          Layout
-        </a>
-      </div>
-      <div data-role="content">
-        <div id="button_grid" class="ui-grid-a">
-          <!-- a = 2 cols, b = 3 , c = 4, d = 5 -->
-          <!-- Dynamically Loaded Content -->
-        </div>
-        <!-- /grid-a -->
-      </div>
-      <!-- /content -->
-    </div>
-    
-    <!-- OPTIONS PAGE -->
-    <div data-role="page" id="options">
-      <div data-role="header">
-        <a href="#home" data-role="button">
-          Back
-        </a>
-        <h1>
-          Options
-        </h1>
-      </div>
-      <div data-role="content">
-          <a onclick="purgeAllData()" data-role="button">Purge All Data</a>
-      </div>
-      <!-- /content -->
-    </div>
+        $.mobile.allowCrossDomainPages = true;
+        $.support.cors = true;
+        });
+      </script>
 
-    <!-- LAYOUT PAGE -->
-    <div data-role="page" id="layout">
-      <div data-role="header">
-        <a href="#home" data-role="button">
-          Back
-        </a>
-        <h1>
-          Layout
-        </h1>
-        <a 
-            id="options_add_button"
-            href="#options_add_button_popup"
-            data-role="button"
-             data-rel="dialog"
-            data-transition="pop">
-
-          Add
-        </a>
-      </div>
-      <div data-role="content">
-        <div id="layout_button_grid" class="ui-grid-a">
-          <!-- a = 2 cols, b = 3 , c = 4, d = 5 -->
-          <!-- Dynamically Loaded Content -->
-        </div>
-        <!-- /grid-a -->
-      </div>
-      <!-- /content -->
-    </div>
-
-    <!-- ADD BUTTON POPUP -->
-    <div data-role="page" id="options_add_button_popup">
-      <div data-role="header">
-        <h1>
-          Add New Button
-        </h1>
-      </div>
-      <div data-role="content">
-        <form>
-          <input type="hidden" value="1" id="button_row" />
-          <input type="hidden" value="1" id="button_col" />
-          <input type="hidden" value="1" id="button_type" />
-          Button Name:
-          <input type="text" id="button_name" />
-          <br />
-          <a data-role="button" id="layout_learn_button" onclick="learnCode();">
-            Learn...
+    </head>
+    <body onload="init();" id="stage" class="theme">
+      <!-- HOME PAGE -->
+      <div data-role="page" id="home">
+        <div data-role="header">
+          <a href="#options" data-role="button">
+            Options
           </a>
-          Remote Code:
-          <input type="text" id="button_remote_code" />
-          <br />
-          <a onclick="addButtonData()" data-role="button" name="add_button_button">Add</a>
+          <h1>
+            RemoteDuino
+          </h1>
+          <a href="#layout" data-role="button">
+            Layout
+          </a>
+        </div>
+        <div data-role="content">
+          <div id="button_grid" class="ui-grid-a">
+            <!-- a = 2 cols, b = 3 , c = 4, d = 5 -->
+            <!-- Dynamically Loaded Content -->
+          </div>
+          <!-- /grid-a -->
+        </div>
+        <!-- /content -->
+      </div>
+
+      <!-- OPTIONS PAGE -->
+      <div data-role="page" id="options">
+        <div data-role="header">
+          <a href="#home" data-role="button">
+            Back
+          </a>
+          <h1>
+            Options
+          </h1>
+        </div>
+        <div data-role="content">
+          <a onclick="purgeAllData()" data-role="button">
+            Purge All Data
+          </a>
+        </div>
+        <!-- /content -->
+      </div>
+
+      <!-- LAYOUT PAGE -->
+      <div data-role="page" id="layout">
+        <div data-role="header">
+          <a href="#home" data-role="button">
+            Back
+          </a>
+          <h1>
+            Layout
+          </h1>
+          <a 
+              id="options_add_button"
+              href="#options_add_button_popup"
+              data-role="button"
+              data-rel="dialog"
+              data-transition="pop">
+
+
+            Add
+          </a>
+        </div>
+        <div data-role="content">
+          <div id="layout_button_grid" class="ui-grid-a">
+            <!-- a = 2 cols, b = 3 , c = 4, d = 5 -->
+            <!-- Dynamically Loaded Content -->
+          </div>
+          <!-- /grid-a -->
+        </div>
+        <!-- /content -->
+      </div>
+
+      <!-- ADD BUTTON POPUP -->
+      <div data-role="page" id="options_add_button_popup">
+        <div data-role="header">
+          <h1>
+            Add New Button
+          </h1>
+        </div>
+        <div data-role="content">
+          <form>
+            <input type="hidden" value="1" id="button_row" />
+            <input type="hidden" value="1" id="button_col" />
+            <input type="hidden" value="1" id="button_type" />
+            Button Name:
+            <input type="text" id="button_name" />
+            <br />
+            <a data-role="button" id="layout_learn_button" onclick="learnCode();">
+              Learn...
+            </a>
+            Remote Code:
+            <input type="text" id="button_remote_code" />
+            <br />
+            <a onclick="addButtonData()" data-role="button" name="add_button_button">
+              Add
+            </a>
+          </form>
+        </div>
+      </div>
+      <!-- /ADD BUTTON POPUP -->
+
+      <!-- EDIT BUTTON PAGE -->
+      <div data-role="dialog" id="edit_button">
+        <div data-role="header">
+          <h1>
+            Edit
+          </h1>
+        </div>
+        <div data-role="content">
+          <a href="#rename_button" data-role="button">
+            Rename
+          </a>
+          <a onclick="moveButton()" data-role="button">
+            Move
+          </a>
+          <a onclick="deleteButton()" data-role="button">
+            Delete
+          </a>
+        </div>
+        <form>
+          <input type="hidden" value="-1" id="edit_type" />
+          <input type="hidden" value="" id="edit_code" />
+          <input type="hidden" value="" id="edit_name" />
+          <input type="hidden" value="-1" id="edit_row" />
+          <input type="hidden" value="-1" id="edit_col" />
         </form>
       </div>
-      <!-- /content -->
-    </div>
-  </body>
-</html>
+      <!-- /edit button -->
+
+      <!-- EDIT BUTTON PAGE -->
+      <div data-role="dialog" id="rename_button">
+        <div data-role="header">
+          <h1>
+            Edit
+          </h1>
+        </div>
+        <div data-role="content">
+          <form>
+            <input type="text" id="rename_button_name" />
+            <input type="button" value="Rename" onclick="renameButton()"/>
+          </form>
+        </div>
+      </div>
+      <!-- /edit button -->
+    </body>
+  </html>

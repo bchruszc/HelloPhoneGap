@@ -96,7 +96,7 @@ function loadCodesSuccess(tx, results) {
     		}
     		if(buttons[col][row]){
     			$('#button_grid').append('<div class="ui-block-'+ block +'"><button type="submit" data-theme="c" onclick="sendCode('+buttons[col][row].code_type+',\''+buttons[col][row].code+'\')">' + buttons[col][row].label + '</button></div>');
-    			$('#layout_button_grid').append('<div class="ui-block-'+ block +'"><button type="submit" data-theme="b" onclick="editButton('+buttons[col][row].row+','+buttons[col][row].col+',\''+buttons[col][row].code+'\',\''+buttons[col][row].label+'\')">' + buttons[col][row].label + '</button></div>');
+    			$('#layout_button_grid').append('<div class="ui-block-'+ block +'"><button type="submit" data-theme="b" onclick="editButton('+buttons[col][row].row+','+buttons[col][row].col+','+buttons[col][row].type+',\''+buttons[col][row].code+'\',\''+buttons[col][row].label+'\')">' + buttons[col][row].label + '</button></div>');
     		} else {
     			$('#button_grid').append('<div class="ui-block-'+ block +'"></div>');
     			$('#layout_button_grid').append('<div class="ui-block-'+ block +'"><button type="submit" data-theme="a" href="#options_add_button_popup" data-role="button" data-rel="dialog" data-transition="pop" onclick="setNextButtonLoc(' + row + ', ' + col + ');">+</button></div>');
@@ -121,7 +121,8 @@ function sendCode(type, code){
 //      });
     
     var jqxhr = $.get("http://192.168.0.50/send?c=0x"+code+"&p=" + type, function(msg) {
-        alert("Success: " + "http://192.168.0.50/send?c=0x"+code+"&p=" + type);
+    	// Code sent successfully
+//        alert("Success: " + "http://192.168.0.50/send?c=0x"+code+"&p=" + type);
       })
       .error(function() { alert("Error sending code!"); });
 }
@@ -136,14 +137,24 @@ function learnCode(){
 	
     var jqxhr = $.get("http://192.168.0.50/learn", function(msg) {
 //        alert("Learned: " + msg);
-        $("#button_remote_code").val(msg);
-        $("#button_type").val(msg);
+        var remoteCode = "";
+        var type = -1;
+        if(msg.indexOf("unknown") >= 0){
+        	remoteCode = "Unknown";
+        	type = -1;
+        } else {
+        	remoteCode = msg.substring(msg.indexOf("<h2>") + 4, msg.indexOf("</h2>"));
+        	type = msg.substring(msg.indexOf("[") + 1, msg.indexOf("]"));
+        }
         
+        $("#button_remote_code").val(remoteCode);
+        $("#button_type").val(type);
+
 //    	$( "#layout_learn_button" ).bind( "click", function(event, ui) {
 //  		  	alert("Too late!");
 //  		});
       })
-      .error(function() { alert("Error learning code!"); })
+      .error(function(msg) { alert("Error learning code! " + msg); })
       .complete(function() { 
       	$("#layout_learn_button").text("LEARN...");
 //    	$("#layout_learn_button").button();
@@ -155,8 +166,49 @@ function learnCode(){
 
 }
 
-function editButton(row, col, code, label){
-	alert("Edit Button: " + row + ", " + col + ", " + code + ", " + label)
+function editButton(row, col, type, code, label){
+//	alert("Edit Button: " + row + ", " + col + ", " + code + ", " + label)
+	// Choices:  rename, move, delete
+	$("#edit_type").val(type);
+	$("#edit_code").val(code);
+	$("#edit_label").val(label);
+	$("#edit_row").val(row);
+	$("#edit_col").val(col);
+	$.mobile.changePage("#edit_button", "pop", false, false);
+}
+
+function renameButton(){
+    var db = window.openDatabase("Database", "1.0", "PhoneGap Demo", 200000);
+    db.transaction(renameButtonInDB, errorCB);
+    db.transaction(loadCodes, errorCB, toLayout); // Refresh
+}
+
+function renameButtonInDB(tx) {
+	var row = $("#edit_row").val();
+	var col = $("#edit_col").val();
+	var newName = $("#rename_button_name").val();
+
+    tx.executeSql('UPDATE BUTTONS SET label = "' + newName + '" WHERE ROW = ' + row + ' AND COL = ' + col);
+}
+
+function moveButton() {
+	alert("Not yet implemented"); // TODO BRAD
+}
+
+function deleteButton(){
+    var db = window.openDatabase("Database", "1.0", "PhoneGap Demo", 200000);
+    db.transaction(deleteEditedCodeFromDB, errorCB);
+    db.transaction(loadCodes, errorCB, toLayout); // Refresh
+}
+
+function deleteEditedCodeFromDB(tx) {
+//	var type = $("#edit_type").val();
+//	var code = $("#edit_code").val();
+//	var label = $("#edit_label").val();
+	var row = $("#edit_row").val();
+	var col = $("#edit_col").val();
+	
+    tx.executeSql('DELETE FROM BUTTONS WHERE ROW = ' + row + ' AND COL = ' + col);
 }
 
 function setNextButtonLoc(row, col){

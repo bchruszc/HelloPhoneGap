@@ -120,11 +120,29 @@ function sendCode(type, code){
 //        error: sendCodeError
 //      });
     
-    var jqxhr = $.get("http://192.168.0.50/send?c=0x"+code+"&p=" + type, function(msg) {
-    	// Code sent successfully
-//        alert("Success: " + "http://192.168.0.50/send?c=0x"+code+"&p=" + type);
-      })
-      .error(function() { alert("Error sending code!"); });
+    var jqxhr = $.get("http://192.168.0.50/send?c=0x" + code + "&p=" + type,
+			function(msg) {
+				// Code sent successfully
+			// alert("Success: " + "http://192.168.0.50/send?c=0x"+code+"&p=" +
+			// type);
+		}).error(function(x, y) {
+			var errorRoot = "Error sending code (send?c=0x" + code + "&p=" + type + ")";
+			var error = "Unknown Error";
+		if (x.status == 0) {
+			error = 'Unable to reach device';
+		} else if (x.status == 404) {
+			error = '404 Not Found';
+		} else if (x.status == 500) {
+			error = '500 Internal Server Error.';
+		} else if (e == 'parsererror') {
+			error = 'Parsing Error';
+		} else if (e == 'timeout') {
+			error = 'Timed Out';
+		} else {
+			error = 'Unknow Error: ' + x.responseText;
+		}
+		alert(errorRoot + '\n' + error);
+	});
 }
 
 function learnCode(){

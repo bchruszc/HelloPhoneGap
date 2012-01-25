@@ -119,6 +119,41 @@ function sendCode(type, code){
 //        success: sendCodeSuccess,
 //        error: sendCodeError
 //      });
+
+	if(code < 10){
+		var targetURL = "";
+		
+		if(code == 0) targetURL = "http://www.google.com";
+		else if(code == 1) targetURL = "http://192.168.0.51/special";
+		else targetURL = "http://192.168.0.51/default";
+		
+		// Actual web request
+		var jqxhr = $.get(targetURL,
+			function(msg) {
+				// Code sent successfully
+				// Do nothing on success
+				// alert("Success");
+		}).error(function(x, y) {
+			// Generic error reporting.
+			var errorRoot = "Error contacting " + targetURL;
+			var error = "Unknown Error";
+		if (x.status == 0) {
+			error = 'Unable to reach device';
+		} else if (x.status == 404) {
+			error = '404 Not Found';
+		} else if (x.status == 500) {
+			error = '500 Internal Server Error.';
+		} else if (e == 'parsererror') {
+			error = 'Parsing Error';
+		} else if (e == 'timeout') {
+			error = 'Timed Out';
+		} else {
+			error = 'Unknow Error: ' + x.responseText;
+		}
+		alert(errorRoot + '\n' + error);
+		});
+		return;
+	}	
     
     var jqxhr = $.get("http://192.168.0.50/send?c=0x" + code + "&p=" + type,
 			function(msg) {
